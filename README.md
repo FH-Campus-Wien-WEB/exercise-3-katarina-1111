@@ -166,4 +166,4 @@ Your final result may look something like this:
 
 ![The final result](images/final.jpg "A screenshot of the final result")
 
-**Done, congratulations!** Don't forget to push!
+**Done, congratulations!** Don't forget to push! 

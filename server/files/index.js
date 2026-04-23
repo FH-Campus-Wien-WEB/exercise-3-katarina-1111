@@ -46,6 +46,7 @@ function loadMovies(genre) {
   xhr.onload = function () {
     const mainElement = document.querySelector("main");
 
+    //delete old movies
     while (mainElement.childElementCount > 0) {
       mainElement.firstChild.remove()
     }
@@ -56,12 +57,15 @@ function loadMovies(genre) {
         appendMovie(movie, mainElement)
       }
     } else {
-      mainElement.append(`Daten konnten nicht geladen werden, Status ${xhr.status} - ${xhr.statusText}`);
+      mainElement.append(`Data could not be loaded, Status ${xhr.status} - ${xhr.statusText}`);
     }
   }
 
   const url = new URL("/movies", location.href)
   /* Task 1.4. Add query parameter to the url if a genre is given */
+  if (genre) {
+    url.searchParams.set("genre", genre);
+  }
 
   xhr.open("GET", url)
   xhr.send()
@@ -73,10 +77,26 @@ window.onload = function () {
     const listElement = document.querySelector("nav>ul");
 
     if (xhr.status === 200) {
-      /* Task 1.3. Add the genre buttons to the listElement and 
-         initialize them with a click handler that calls the 
-         loadMovies(...) function above. */
+      /* Task 1.3. */
       const genres = JSON.parse(xhr.responseText);
+
+      new ElementBuilder("li")
+        .append(
+          new ElementBuilder("button")
+            .text("All")
+            .listener("click", () => loadMovies())
+        )
+        .appendTo(listElement);
+
+        genres.forEach(genre => {
+          new ElementBuilder("li")
+            .append(
+              new ElementBuilder("button")
+                .text(genre)
+                .listener("click", () => loadMovies(genre))
+            )
+            .appendTo(listElement);
+        });
 
       /* When a first button exists, we click it to load all movies. */
       const firstButton = document.querySelector("nav button");
@@ -84,7 +104,7 @@ window.onload = function () {
         firstButton.click();
       }
     } else {
-      document.querySelector("body").append(`Daten konnten nicht geladen werden, Status ${xhr.status} - ${xhr.statusText}`);
+      document.querySelector("body").append(`Data could not be loaded, Status ${xhr.status} - ${xhr.statusText}`);
     }
   };
   xhr.open("GET", "/genres");

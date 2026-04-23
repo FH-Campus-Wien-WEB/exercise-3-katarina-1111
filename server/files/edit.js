@@ -1,3 +1,5 @@
+let currentMovieData = {};
+
 function setMovie(movie) {
 
   for (const element of document.forms[0].elements) {
@@ -50,22 +52,26 @@ function getMovie() {
 }
 
 function putMovie() {
-  const movie = getMovie();
+    // 1. Get Data from form
+    const formData = getMovie();
 
-  const xhr = new XMLHttpRequest()
-  xhr.onload = function() {
-    if (xhr.status == 200 || xhr.status === 204) {
-      location.href = 'index.html'
-    } else {
-      alert("Saving of movie data failed. Status code was " + response.status)
-    }
-  }
-  
-  xhr.open("PUT", "/movies/" + movie.imdbID)
-  xhr.setRequestHeader("Content-Type", "application/json")
+    // 2. Combine currentMovieData so nothing gets lost
+    const finalData = Object.assign({}, currentMovieData, formData);
 
-  xhr.send(JSON.stringify(movie))
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", "/movies/" + finalData.imdbID);
+    xhr.setRequestHeader("Content-Type", "application/json");
 
+    xhr.onload = function () {
+        if (xhr.status === 200 || xhr.status === 201) {
+            console.log("Saved successfully.");
+            location.href = "index.html";
+        } else {
+            alert("Error while saving: " + xhr.status);
+        }
+    };
+    
+    xhr.send(JSON.stringify(finalData));
 }
 
 /** Loading and setting the movie data for the movie with the passed imdbID */
